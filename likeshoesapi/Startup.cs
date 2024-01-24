@@ -21,6 +21,15 @@ namespace likeshoesapi
 
             services.AddControllers();
             //services.AddEndpointsApiExplorer();
+
+            //Cors para poder realizar consultas desde cualquier fuente
+            services.AddCors(options =>
+            {
+                options.AddPolicy(
+                    "AllowAnyOrigin",
+                    builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
+                );
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -31,7 +40,12 @@ namespace likeshoesapi
             }
 
             app.UseHttpsRedirection();
+
             app.UseRouting();
+
+            // Habilitar CORS - Cors para poder realizar consultas desde cualquier fuente
+            app.UseCors("AllowAnyOrigin");
+
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
