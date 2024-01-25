@@ -1,4 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace likeshoesapi
 {
@@ -14,15 +19,37 @@ namespace likeshoesapi
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddAutoMapper(typeof(Startup));
+            services
+                .AddIdentity<IdentityUser, IdentityRole>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
+
             services.AddDbContext<ApplicationDbContext>(
                 options =>
                     options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             );
 
+            services
+                .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(
+                    options =>
+                        options.TokenValidationParameters = new TokenValidationParameters
+                        {
+                            ValidateIssuer = false,
+                            ValidateAudience = false,
+                            ValidateLifetime = true,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(
+                                Encoding.UTF8.GetBytes(Configuration["keyjwt"])
+                            ),
+                            ClockSkew = TimeSpan.Zero
+                        }
+                );
+
             services.AddControllers();
             //services.AddEndpointsApiExplorer();
+            services.AddSwaggerGen();
 
-            //Cors para poder realizar consultas desde cualquier fuente
             services.AddCors(options =>
             {
                 options.AddPolicy(
@@ -36,7 +63,10 @@ namespace likeshoesapi
         {
             if (env.IsDevelopment())
             {
-                app.UseDeveloperExceptionPage();
+                //app.UseDeveloperExceptionPage();
+
+                app.UseSwagger();
+                app.UseSwaggerUI();
             }
 
             app.UseHttpsRedirection();

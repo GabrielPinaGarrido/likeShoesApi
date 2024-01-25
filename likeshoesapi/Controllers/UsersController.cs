@@ -1,8 +1,13 @@
-﻿using AutoMapper;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using AutoMapper;
 using likeshoesapi.DTOs;
 using likeshoesapi.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace likeshoesapi.Controllers
 {
@@ -12,76 +17,66 @@ namespace likeshoesapi.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly IConfiguration _configuration;
+        private readonly SignInManager<IdentityUser> _signInManager;
 
-        public UsersController(ApplicationDbContext context, IMapper mapper)
+        public UsersController(
+            ApplicationDbContext context,
+            IMapper mapper,
+            UserManager<IdentityUser> userManager,
+            IConfiguration configuration,
+            SignInManager<IdentityUser> signInManager
+        )
         {
             this._context = context;
             this._mapper = mapper;
+            this._userManager = userManager;
+            this._configuration = configuration;
+            this._signInManager = signInManager;
         }
 
         [HttpGet("login")]
-        public async Task<ActionResult<UserDTO>> UserLogin([FromBody] UserLoginDTO userLoginDTO)
+        public async Task<ActionResult<AutenticationResponse>> Login(
+            UserCredentials userCredentials
+        )
         {
-            if (userLoginDTO == null || userLoginDTO.Email == null || userLoginDTO.Password == null)
+            var result = await _signInManager.PasswordSignInAsync(
+                userCredentials.Email,
+                userCredentials.Password,
+                isPersistent: false,
+                lockoutOnFailure: false
+            );
+
+            if (result.Succeeded)
             {
-                return BadRequest("Invalid user data");
+                return BuildToken(userCredentials);
             }
-
-            var user = await _context
-                .Users
-                .Where(
-                    user =>
-                        userLoginDTO.Email.Equals(user.Email)
-                        && userLoginDTO.Password.Equals(user.Password)
-                )
-                .SingleOrDefaultAsync();
-
-            if (user == null)
+            else
             {
-                return NotFound();
+                return BadRequest("Login incorrecto");
             }
-
-            var dto = _mapper.Map<UserDTO>(user);
-
-            return Ok(dto);
         }
 
-        [HttpPost]
-        public async Task<ActionResult<UserDTO>> Post([FromBody] UserPostDTO userPostDTO)
+        [HttpPost("register")]
+        public async Task<ActionResult<AutenticationResponse>> Register(
+            UserCredentials userCredentials
+        )
         {
-            try
+            var user = new IdentityUser
             {
-                if (
-                    userPostDTO == null
-                    || userPostDTO.Email == null
-                    || userPostDTO.Password == null
-                )
-                {
-                    return BadRequest("Invalid user data");
-                }
+                UserName = userCredentials.Email,
+                Email = userCredentials.Email
+            };
+            var result = await _userManager.CreateAsync(user, userCredentials.Password);
 
-                var userExistence = await _context
-                    .Users
-                    .AnyAsync(u => userPostDTO.Email.Equals(u.Email));
-
-                if (userExistence)
-                {
-                    return Conflict("El correo electronico ya esta en uso");
-                }
-
-                var userPost = _mapper.Map<User>(userPostDTO);
-                _context.Add(userPost);
-                await _context.SaveChangesAsync();
-                var userDTO = _mapper.Map<UserDTO>(userPost);
-
-                return Ok(userDTO);
+            if (result.Succeeded)
+            {
+                return BuildToken(userCredentials);
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(
-                    500,
-                    "Ocurrió un error interno en el servidor al procesar la solicitud."
-                );
+                return BadRequest(result.Errors);
             }
         }
 
@@ -177,6 +172,30 @@ namespace likeshoesapi.Controllers
                     "Ocurrió un error interno en el servidor al procesar la solicitud."
                 );
             }
+        }
+
+        private AutenticationResponse BuildToken(UserCredentials userCredentials)
+        {
+            var claims = new List<Claim>() { new Claim("email", userCredentials.Email) };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["keyjwt"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var expiration = DateTime.UtcNow.AddDays(1);
+
+            var securityToken = new JwtSecurityToken(
+                issuer: null,
+                audience: null,
+                claims: claims,
+                expires: expiration,
+                signingCredentials: creds
+            );
+
+            return new AutenticationResponse()
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(securityToken),
+                Expiration = expiration
+            };
         }
     }
 }
