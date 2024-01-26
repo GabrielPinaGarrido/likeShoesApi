@@ -16,17 +16,17 @@ namespace likeshoesapi.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext _context;
-        private readonly IMapper _mapper;
         private readonly UserManager<IdentityUser> _userManager;
-        private readonly IConfiguration _configuration;
         private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly IMapper _mapper;
+        private readonly IConfiguration _configuration;
 
         public UsersController(
             ApplicationDbContext context,
-            IMapper mapper,
             UserManager<IdentityUser> userManager,
-            IConfiguration configuration,
-            SignInManager<IdentityUser> signInManager
+            SignInManager<IdentityUser> signInManager,
+            IMapper mapper,
+            IConfiguration configuration
         )
         {
             this._context = context;
@@ -36,7 +36,7 @@ namespace likeshoesapi.Controllers
             this._signInManager = signInManager;
         }
 
-        [HttpGet("login")]
+        [HttpPost("login")]
         public async Task<ActionResult<AutenticationResponse>> Login(
             UserCredentials userCredentials
         )
@@ -80,99 +80,99 @@ namespace likeshoesapi.Controllers
             }
         }
 
-        [HttpGet("getUsers")]
-        public async Task<ActionResult<List<UserDTO>>> GetUsers()
-        {
-            try
-            {
-                var users = await _context.Users.ToListAsync();
+        //[HttpGet("getUsers")]
+        //public async Task<ActionResult<List<UserDTO>>> GetUsers()
+        //{
+        //    try
+        //    {
+        //        var users = await _context.Users.ToListAsync();
 
-                var usersDTO = _mapper.Map<List<UserDTO>>(users);
+        //        var usersDTO = _mapper.Map<List<UserDTO>>(users);
 
-                return Ok(usersDTO);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    "Ocurrió un error interno en el servidor al procesar la solicitud."
-                );
-            }
-        }
+        //        return Ok(usersDTO);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(
+        //            500,
+        //            "Ocurrió un error interno en el servidor al procesar la solicitud."
+        //        );
+        //    }
+        //}
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<UserDTO>> Get(int id)
-        {
-            try
-            {
-                var user = await _context.Users.SingleOrDefaultAsync(user => user.Id.Equals(id));
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<UserDTO>> Get(int id)
+        //{
+        //    try
+        //    {
+        //        var user = await _context.Users.SingleOrDefaultAsync(user => user.Id.Equals(id));
 
-                if (user == null)
-                {
-                    return NotFound();
-                }
+        //        if (user == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                var userDTO = _mapper.Map<UserDTO>(user);
+        //        var userDTO = _mapper.Map<UserDTO>(user);
 
-                return Ok(userDTO);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    "Ocurrió un error interno en el servidor al procesar la solicitud."
-                );
-            }
-        }
+        //        return Ok(userDTO);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(
+        //            500,
+        //            "Ocurrió un error interno en el servidor al procesar la solicitud."
+        //        );
+        //    }
+        //}
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
-        {
-            try
-            {
-                var user = await _context.Users.FindAsync(id);
+        //[HttpDelete("{id}")]
+        //public async Task<ActionResult> Delete(int id)
+        //{
+        //    try
+        //    {
+        //        var user = await _context.Users.FindAsync(id);
 
-                if (user == null)
-                {
-                    return NotFound();
-                }
+        //        if (user == null)
+        //        {
+        //            return NotFound();
+        //        }
 
-                _context.Users.Remove(user);
-                await _context.SaveChangesAsync();
+        //        _context.Users.Remove(user);
+        //        await _context.SaveChangesAsync();
 
-                return NoContent();
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    "Ocurrió un error interno en el servidor al procesar la solicitud."
-                );
-            }
-        }
+        //        return NoContent();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(
+        //            500,
+        //            "Ocurrió un error interno en el servidor al procesar la solicitud."
+        //        );
+        //    }
+        //}
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<UserDTO>> Put(int id, [FromBody] UserPostDTO userPostDTO)
-        {
-            try
-            {
-                var user = _mapper.Map<User>(userPostDTO);
-                user.Id = id;
-                _context.Entry(user).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult<UserDTO>> Put(int id, [FromBody] UserPostDTO userPostDTO)
+        //{
+        //    try
+        //    {
+        //        var user = _mapper.Map<User>(userPostDTO);
+        //        user.Id = id;
+        //        _context.Entry(user).State = EntityState.Modified;
+        //        await _context.SaveChangesAsync();
 
-                var userDTO = _mapper.Map<UserDTO>(user);
+        //        var userDTO = _mapper.Map<UserDTO>(user);
 
-                return Ok(userDTO);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(
-                    500,
-                    "Ocurrió un error interno en el servidor al procesar la solicitud."
-                );
-            }
-        }
+        //        return Ok(userDTO);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        return StatusCode(
+        //            500,
+        //            "Ocurrió un error interno en el servidor al procesar la solicitud."
+        //        );
+        //    }
+        //}
 
         private AutenticationResponse BuildToken(UserCredentials userCredentials)
         {
