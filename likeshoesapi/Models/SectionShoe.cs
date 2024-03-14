@@ -12,12 +12,13 @@ namespace likeshoesapi.Models
 
         [Required]
         [StringLength(20)]
+        
     }
 }
 
 //{
 //nameButton: "Mujeres",
-//      sections:
+//      type_shoe:
 //    [
 //        {
 //    nameSection: "Tenis",
