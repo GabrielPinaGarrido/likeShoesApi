@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography.Xml;
 using System.Text;
+using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
@@ -26,9 +27,11 @@ namespace likeshoesapi
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 
+            //.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
             services.AddDbContext<ApplicationDbContext>(
                 options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"))
+                    options
+                    .UseNpgsql(Configuration.GetConnectionString("DefaultConnection"))
             );
 
             services
@@ -93,6 +96,13 @@ namespace likeshoesapi
                     builder => builder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()
                 );
             });
+
+            // serializacion para evitar un error al realizar consultas a mis endponts
+            services
+               .AddControllers()
+               .AddJsonOptions(
+                   x => x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles
+               );
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
