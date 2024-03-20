@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using likeshoesapi.DTOs;
+using likeshoesapi.DTOs.Shoe;
 using likeshoesapi.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,9 @@ namespace likeshoesapi.Controllers
             var sections = new List<ShoeSection>();
             try
             {
-                sections = await _context.ShoeSections.ToListAsync();
+                sections = await _context
+                    .ShoeSections.Include(x => x.ShoeSectionShoeType)
+                    .ToListAsync();
 
                 return Ok(sections);
             }
@@ -36,6 +39,15 @@ namespace likeshoesapi.Controllers
                     "Ocurrió un error interno en el servidor al procesar la solicitud."
                 );
             }
+        }
+
+        [HttpGet("section")]
+        public async Task<ActionResult<ShoeSectionDTO>> GetSection(int id)
+        {
+            var shoeSection = await _context
+                .ShoeSections.Include(x => x.ShoeSectionShoeType)
+                .ThenInclude(x => x.ShoeType)
+                .FirstOrDefaultAsync();
         }
 
         [HttpPost("section")]

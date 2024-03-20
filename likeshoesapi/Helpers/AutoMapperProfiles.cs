@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using likeshoesapi.DTOs;
+using likeshoesapi.DTOs.Shoe;
 using likeshoesapi.Models;
 
 namespace likeshoesapi.Helpers
@@ -17,6 +18,11 @@ namespace likeshoesapi.Helpers
                 .ForMember(
                     shoeSection => shoeSection.ShoeSectionShoeType,
                     options => options.MapFrom(MapShoeSectionShoeType)
+                );
+            CreateMap<ShoeSection, ShoeSectionDTO>()
+                .ForMember(
+                    ShoeSectionDTO => ShoeSectionDTO.ShoeTypes,
+                    options => options.MapFrom(MapShoeSectionDTO)
                 );
         }
 
@@ -38,6 +44,30 @@ namespace likeshoesapi.Helpers
             }
 
             return result;
+        }
+
+        private List<ShoeSectionDTO> MapShoeSectionDTO(
+            ShoeSection shoeSection,
+            ShoeSectionDTO shoeSectionDTO
+        )
+        {
+            var result = new List<ShoeSectionDTO>();
+
+            if (shoeSection.ShoeSectionShoeType == null)
+            {
+                return result;
+            }
+
+            foreach (var shoeSectionShoeType in shoeSection.ShoeSectionShoeType)
+            {
+                result.Add(
+                    new ShoeType()
+                    {
+                        Id = shoeSectionShoeType.ShoeTypeId,
+                        TypeName = shoeSectionShoeType.ShoeType.TypeName
+                    }
+                );
+            }
         }
     }
 }
