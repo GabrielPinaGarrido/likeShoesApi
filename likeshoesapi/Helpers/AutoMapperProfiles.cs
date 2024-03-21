@@ -22,7 +22,7 @@ namespace likeshoesapi.Helpers
             CreateMap<ShoeSection, ShoeSectionDTO>()
                 .ForMember(
                     ShoeSectionDTO => ShoeSectionDTO.ShoeTypes,
-                    options => options.MapFrom(MapShoeSectionDTO)
+                    options => options.MapFrom(MapShoeSectionDTOTypes)
                 );
         }
 
@@ -46,12 +46,12 @@ namespace likeshoesapi.Helpers
             return result;
         }
 
-        private List<ShoeSectionDTO> MapShoeSectionDTO(
+        private List<ShoeTypeDTO> MapShoeSectionDTOTypes(
             ShoeSection shoeSection,
             ShoeSectionDTO shoeSectionDTO
         )
         {
-            var result = new List<ShoeSectionDTO>();
+            var result = new List<ShoeTypeDTO>();
 
             if (shoeSection.ShoeSectionShoeType == null)
             {
@@ -61,13 +61,15 @@ namespace likeshoesapi.Helpers
             foreach (var shoeSectionShoeType in shoeSection.ShoeSectionShoeType)
             {
                 result.Add(
-                    new ShoeType()
+                    new ShoeTypeDTO()
                     {
                         Id = shoeSectionShoeType.ShoeTypeId,
                         TypeName = shoeSectionShoeType.ShoeType.TypeName
                     }
                 );
             }
+
+            return result;
         }
     }
 }

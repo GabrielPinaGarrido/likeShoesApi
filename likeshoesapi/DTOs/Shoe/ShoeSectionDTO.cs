@@ -1,9 +1,16 @@
 ﻿using likeshoesapi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace likeshoesapi.DTOs.Shoe
 {
-    public class ShoeSectionDTO : ShoeSection
+    public class ShoeSectionDTO
     {
-        public List<ShoeType>? ShoeTypes { get; set; }
+        public int Id { get; set; }
+
+        [Required]
+        [StringLength(20)]
+        public string? SectionName { get; set; }
+
+        public List<ShoeTypeDTO>? ShoeTypes { get; set; }
     }
 }

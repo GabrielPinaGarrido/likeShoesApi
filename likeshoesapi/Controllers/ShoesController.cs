@@ -26,8 +26,8 @@ namespace likeshoesapi.Controllers
             var sections = new List<ShoeSection>();
             try
             {
-                sections = await _context
-                    .ShoeSections.Include(x => x.ShoeSectionShoeType)
+                sections = await _context.ShoeSections
+                    .Include(x => x.ShoeSectionShoeType)
                     .ToListAsync();
 
                 return Ok(sections);
@@ -44,17 +44,19 @@ namespace likeshoesapi.Controllers
         [HttpGet("section")]
         public async Task<ActionResult<ShoeSectionDTO>> GetSection(int id)
         {
-            var shoeSection = await _context
-                .ShoeSections.Include(x => x.ShoeSectionShoeType)
+            var shoeSection = await _context.ShoeSections
+                .Include(x => x.ShoeSectionShoeType)
                 .ThenInclude(x => x.ShoeType)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            return _mapper.Map<ShoeSectionDTO>(shoeSection);
         }
 
         [HttpPost("section")]
         public async Task<ActionResult> PostSection(ShoeSectionPostDTO shoeSectionPostDTO)
         {
-            var shoeTypeIds = await _context
-                .ShoeTypes.Where(shoeType => shoeSectionPostDTO.ShoeTypeIds.Contains(shoeType.Id))
+            var shoeTypeIds = await _context.ShoeTypes
+                .Where(shoeType => shoeSectionPostDTO.ShoeTypeIds.Contains(shoeType.Id))
                 .Select(x => x.Id)
                 .ToListAsync();
 
