@@ -21,16 +21,16 @@ namespace likeshoesapi.Controllers
         }
 
         [HttpGet("sections")]
-        public async Task<ActionResult<List<ShoeSection>>> GetSections()
+        public async Task<ActionResult<List<ShoeSectionDTO>>> GetSections()
         {
-            var sections = new List<ShoeSection>();
             try
             {
-                sections = await _context.ShoeSections
-                    .Include(x => x.ShoeSectionShoeType)
+                var sections = await _context
+                    .ShoeSections.Include(x => x.ShoeSectionShoeType)
+                    .ThenInclude(x => x.ShoeType)
                     .ToListAsync();
 
-                return Ok(sections);
+                return _mapper.Map<List<ShoeSectionDTO>>(sections);
             }
             catch (Exception ex)
             {
@@ -44,8 +44,8 @@ namespace likeshoesapi.Controllers
         [HttpGet("section")]
         public async Task<ActionResult<ShoeSectionDTO>> GetSection(int id)
         {
-            var shoeSection = await _context.ShoeSections
-                .Include(x => x.ShoeSectionShoeType)
+            var shoeSection = await _context
+                .ShoeSections.Include(x => x.ShoeSectionShoeType)
                 .ThenInclude(x => x.ShoeType)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
@@ -55,8 +55,8 @@ namespace likeshoesapi.Controllers
         [HttpPost("section")]
         public async Task<ActionResult> PostSection(ShoeSectionPostDTO shoeSectionPostDTO)
         {
-            var shoeTypeIds = await _context.ShoeTypes
-                .Where(shoeType => shoeSectionPostDTO.ShoeTypeIds.Contains(shoeType.Id))
+            var shoeTypeIds = await _context
+                .ShoeTypes.Where(shoeType => shoeSectionPostDTO.ShoeTypeIds.Contains(shoeType.Id))
                 .Select(x => x.Id)
                 .ToListAsync();
 
