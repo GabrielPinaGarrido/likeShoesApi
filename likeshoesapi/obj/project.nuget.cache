@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "hp5AIi+leHXWF8nzYq0/09J88hqhjv8y7qF5MvHBcZfIThPIHUwHyPn0xjpKa3lT/ENbwLw1lMHeX001RMSkMg==",
+  "dgSpecHash": "4i7uBj2mP29/C6w+l+EoMqbpa4QpUYpcVl0yLhjEiGjuqNNm37kGQhxCGsXLRJowvPUMsX1YjZD6K4dhQwPXAg==",
   "success": true,
-  "projectFilePath": "D:\\projects\\likeShoesApi\\likeshoesapi\\likeshoesapi.csproj",
+  "projectFilePath": "D:\\Sena\\Programacion\\Ecommerce\\likeShoesApi\\likeshoesapi\\likeshoesapi.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\diego\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\diego\\.nuget\\packages\\humanizer.core\\2.8.26\\humanizer.core.2.8.26.nupkg.sha512",

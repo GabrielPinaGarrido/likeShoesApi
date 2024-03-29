@@ -1,0 +1,41 @@
+# Archivos de compilación y temporales
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+*.user
+*.suo
+*.cache
+
+# Archivos de configuración local
+appsettings.json
+appsettings.Development.json
+
+# Archivos de usuario y configuración de Visual Studio
+*.sln
+*.suo
+*.user
+*.userprefs
+*.vscode/
+*.vs/
+
+# Directorios de dependencias NuGet
+/packages/
+
+# Archivos de registro y archivos de salida de herramientas
+*.log
+*.vspscc
+*.vssscc
+
+# Archivos de caché y archivos temporales
+_ReSharper*/
+[Tt]emp/
+[Oo]bj/
+[Bb]in/
+
+# Archivos sensibles o de configuración personal
+.env
+.env.*
+.vs/
+obj/
