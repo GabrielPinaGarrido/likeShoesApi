@@ -12,7 +12,7 @@ using likeshoesapi;
 namespace likeshoesapi.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240318010055_LikeShoes[1]")]
+    [Migration("20240330004937_LikeShoes[1]")]
     partial class LikeShoes1
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -23,6 +23,49 @@ namespace likeshoesapi.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
+
+            modelBuilder.Entity("likeshoesapi.Models.Shoe", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ShoeDescription")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("character varying(50)");
+
+                    b.Property<string>("ShoeImage")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<string>("ShoeName")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("character varying(20)");
+
+                    b.Property<int?>("ShoePrice")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ShoeSectionId")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("ShoeTypeId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ShoeSectionId");
+
+                    b.HasIndex("ShoeTypeId");
+
+                    b.ToTable("Shoe");
+                });
 
             modelBuilder.Entity("likeshoesapi.Models.ShoeSection", b =>
                 {
@@ -317,6 +360,17 @@ namespace likeshoesapi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("likeshoesapi.Models.Shoe", b =>
+                {
+                    b.HasOne("likeshoesapi.Models.ShoeSection", null)
+                        .WithMany("Shoe")
+                        .HasForeignKey("ShoeSectionId");
+
+                    b.HasOne("likeshoesapi.Models.ShoeType", null)
+                        .WithMany("Shoe")
+                        .HasForeignKey("ShoeTypeId");
+                });
+
             modelBuilder.Entity("likeshoesapi.Models.ShoeSectionShoeType", b =>
                 {
                     b.HasOne("likeshoesapi.Models.ShoeSection", "ShoeSection")
@@ -389,11 +443,15 @@ namespace likeshoesapi.Migrations
 
             modelBuilder.Entity("likeshoesapi.Models.ShoeSection", b =>
                 {
+                    b.Navigation("Shoe");
+
                     b.Navigation("ShoeSectionShoeType");
                 });
 
             modelBuilder.Entity("likeshoesapi.Models.ShoeType", b =>
                 {
+                    b.Navigation("Shoe");
+
                     b.Navigation("ShoeSectionShoeType");
                 });
 #pragma warning restore 612, 618

@@ -210,6 +210,34 @@ namespace likeshoesapi.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Shoe",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "integer", nullable: false)
+                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ShoeName = table.Column<string>(type: "character varying(20)", maxLength: 20, nullable: false),
+                    ShoeDescription = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
+                    ShoePrice = table.Column<int>(type: "integer", maxLength: 8, nullable: false),
+                    ShoeImage = table.Column<string>(type: "character varying(500)", maxLength: 500, nullable: false),
+                    ShoeSectionId = table.Column<int>(type: "integer", nullable: true),
+                    ShoeTypeId = table.Column<int>(type: "integer", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Shoe", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Shoe_ShoeSections_ShoeSectionId",
+                        column: x => x.ShoeSectionId,
+                        principalTable: "ShoeSections",
+                        principalColumn: "Id");
+                    table.ForeignKey(
+                        name: "FK_Shoe_ShoeTypes_ShoeTypeId",
+                        column: x => x.ShoeTypeId,
+                        principalTable: "ShoeTypes",
+                        principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ShoeSectionsShoeType",
                 columns: table => new
                 {
@@ -271,6 +299,16 @@ namespace likeshoesapi.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
+                name: "IX_Shoe_ShoeSectionId",
+                table: "Shoe",
+                column: "ShoeSectionId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Shoe_ShoeTypeId",
+                table: "Shoe",
+                column: "ShoeTypeId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ShoeSectionsShoeType_ShoeTypeId",
                 table: "ShoeSectionsShoeType",
                 column: "ShoeTypeId");
@@ -292,6 +330,9 @@ namespace likeshoesapi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Shoe");
 
             migrationBuilder.DropTable(
                 name: "ShoeSectionsShoeType");

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("likeshoesapi")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+07b872e194afe404246e81b853e077b74c4eb3b3")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+eb52eaf2bc5293175c829dc192703009409bfc00")]
 [assembly: System.Reflection.AssemblyProductAttribute("likeshoesapi")]
 [assembly: System.Reflection.AssemblyTitleAttribute("likeshoesapi")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

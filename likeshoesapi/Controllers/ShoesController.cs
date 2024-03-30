@@ -41,6 +41,39 @@ namespace likeshoesapi.Controllers
             }
         }
 
+        // Debo agregarle el filtro
+        [HttpGet("shoe-catalog")]
+        public async Task<ActionResult<List<ShoeDTO>>> GetShoes(int shoeSectionId, int shoeTypeId)
+        {
+            var shoes = new List<Shoe>();
+            try
+            {
+                if (shoeTypeId == 0)
+                {
+                    shoes = await _context
+                        .Shoe.Where(x => x.ShoeSectionId.Equals(shoeSectionId))
+                        .ToListAsync();
+                }
+                else
+                {
+                    shoes = await _context
+                        .Shoe.Where(x =>
+                            x.ShoeSectionId.Equals(shoeSectionId) && x.ShoeTypeId.Equals(shoeTypeId)
+                        )
+                        .ToListAsync();
+                }
+
+                return _mapper.Map<List<ShoeDTO>>(shoes);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(
+                    500,
+                    "Ocurrio un error interno en el servidor al procesar la solicitud"
+                );
+            }
+        }
+
         [HttpGet("section")]
         public async Task<ActionResult<ShoeSectionDTO>> GetSection(int id)
         {
@@ -69,6 +102,51 @@ namespace likeshoesapi.Controllers
             _context.Add(shoeSection);
             await _context.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpPost("shoe-type")]
+        public async Task<ActionResult> PostShoeType(ShoeTypeDTO shoeTypeDTO)
+        {
+            var shoeType = await _context
+                .ShoeTypes.Where(shoeType => shoeType.Id.Equals(shoeTypeDTO.Id))
+                .SingleOrDefaultAsync();
+
+            if (shoeType != null)
+            {
+                return BadRequest($"El zapato con id {shoeTypeDTO.Id} ya existe");
+            }
+
+            var shoeTypeMap = _mapper.Map<ShoeType>(shoeTypeDTO);
+            _context.Add(shoeTypeMap);
+            await _context.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPost("shoe")]
+        public async Task<ActionResult> PostShoe(ShoeDTO shoeDTO)
+        {
+            try
+            {
+                var shoeSectionId = await _context
+                    .ShoeSections.Where(shoeSection => shoeDTO.ShoeSectionId.Equals(shoeSection.Id))
+                    .Select(x => x.Id)
+                    .FirstAsync();
+
+                if (shoeDTO.ShoeSectionId != shoeSectionId)
+                {
+                    return BadRequest("No existe la seccion enviada");
+                }
+
+                var shoe = _mapper.Map<Shoe>(shoeDTO);
+
+                _context.Add(shoe);
+                await _context.SaveChangesAsync();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest("Error en DB: " + ex);
+            }
         }
     }
 }

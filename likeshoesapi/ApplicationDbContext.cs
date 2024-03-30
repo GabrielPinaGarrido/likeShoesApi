@@ -23,5 +23,6 @@ namespace likeshoesapi
         public DbSet<ShoeType> ShoeTypes { get; set; }
         public DbSet<ShoeVariant> ShoeVariants { get; set; }
         public DbSet<ShoeSectionShoeType> ShoeSectionsShoeType { get; set; }
+        public DbSet<Shoe> Shoe { get; set; }
     }
 }

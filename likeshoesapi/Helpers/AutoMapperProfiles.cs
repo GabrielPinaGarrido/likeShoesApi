@@ -24,6 +24,8 @@ namespace likeshoesapi.Helpers
                     ShoeSectionDTO => ShoeSectionDTO.ShoeTypes,
                     options => options.MapFrom(MapShoeSectionDTOTypes)
                 );
+            CreateMap<ShoeDTO, Shoe>().ReverseMap();
+            CreateMap<ShoeTypeDTO, ShoeType>().ReverseMap();
         }
 
         private List<ShoeSectionShoeType> MapShoeSectionShoeType(

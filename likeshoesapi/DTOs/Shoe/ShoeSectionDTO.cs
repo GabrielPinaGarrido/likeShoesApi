@@ -1,5 +1,5 @@
-﻿using likeshoesapi.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using likeshoesapi.Models;
 
 namespace likeshoesapi.DTOs.Shoe
 {
